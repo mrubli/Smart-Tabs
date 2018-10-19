@@ -186,6 +186,9 @@ if ! exists('g:ctab_disable_checkalign') || g:ctab_disable_checkalign==0
   " Check the alignment of line.
   " Used in the case where some alignment whitespace is required .. like for unmatched brackets.
   fun! s:CheckAlign(line)
+    if getline(line('.') - 1) =~ '^\s*$'
+      call setline(line('.') - 1, '')
+    endif
     if &expandtab || !(&autoindent || &indentexpr || &cindent)
       return ''
     endif
@@ -258,6 +261,7 @@ if ! exists('g:ctab_disable_checkalign') || g:ctab_disable_checkalign==0
     endif
   endfun
 
+  exe 'inoremap '.s:buff_map.'<silent> <expr> <Esc> <SID>CheckEsc()'
   exe 'inoremap '.s:buff_map.'<silent> <expr> <CR> <SID>CheckCR()'
   exe 'nnoremap '.s:buff_map.'<silent> o o<c-r>=<SID>CheckAlign(line(''.''))."\<lt>END>"<CR>'
   exe 'nnoremap '.s:buff_map.'<silent> O O<c-r>=<SID>CheckAlign(line(''.''))."\<lt>END>"<CR>'
@@ -323,6 +327,19 @@ fun! s:RetabIndent( bang, firstl, lastl, tab )
     let l=l+1
   endwhile
   if newtabstop != &tabstop | let &tabstop = newtabstop | endif
+endfun
+
+fun! s:RemoveSpaces(lnum)
+  undojoin
+  call setline(a:lnum, '')
+  return ''
+endfun
+
+fun! s:CheckEsc()
+  if getline('.') =~ '^\s*$'
+    return "\<c-r>=<SNR>".s:SID().'_RemoveSpaces(line(''.''))'."\<CR>\<Esc>\<END>"
+  endif
+  return "\<Esc>"
 endfun
 
 

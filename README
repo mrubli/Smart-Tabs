@@ -2,6 +2,7 @@ This is a FORK of https://github.com/vim-scripts/Smart-Tabs
 
 Changes:
 
+- Add fix for 'O' leaving trailing whitespace with expandtab on
 - Merge b:ctab_lastalign fix from @skroll
 - Merge increase supported line size from @skroll
 - Merge fix for ts==0 from @nilium
